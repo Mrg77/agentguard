@@ -1,0 +1,62 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: stable
+      - name: gofmt
+        run: test -z "$(gofmt -l .)" || (gofmt -l . && exit 1)
+      - name: go vet
+        run: go vet ./...
+
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: stable
+      - name: build
+        run: go build ./...
+      - name: test (race)
+        run: go test -race ./...
+
+  # Dogfooding: the guardrails the tool ships must actually hold. If the default
+  # policy ever stops denying these, the build fails — the tool gates itself.
+  guardrails:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: stable
+      - run: go build -o agentguard .
+      - name: destructive prod actions must be denied
+        run: |
+          ! ./agentguard policy test --tool shell --target "kubectl delete namespace payments" --context prod
+          ! ./agentguard policy test --target "terraform destroy" --context prod
+          ! ./agentguard policy test --target "rm -rf /data" --context dev
+      - name: read-only actions must be allowed
+        run: |
+          ./agentguard policy test --tool kubectl --target "kubectl get pods" --context prod
