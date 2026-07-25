@@ -180,9 +180,9 @@ IA » serait le moins digne de confiance.
 ## Roadmap
 
 - [x] Le moteur de policy déterministe (`policy test`, `init`) — allow/ask/deny
-- [ ] `agentguard up` — un cluster kind jetable + un modèle Ollama local en une
-      commande, pour voir le guard se déclencher contre un vrai agent, sur un
-      laptop, en CPU seul
+- [x] `agentguard up` / `down` — un cluster kind jetable + un modèle Ollama local
+      en une commande, sur un laptop, en CPU seul (kubeconfig isolé, jamais le
+      vôtre)
 - [ ] `agentguard proxy` — un sidecar MCP qui applique la policy sur les
       tool-calls en direct, avec un journal d'audit et un compteur de tokens/coût
       par contexte

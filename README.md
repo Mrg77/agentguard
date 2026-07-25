@@ -172,9 +172,9 @@ less trustworthy one.
 ## Roadmap
 
 - [x] The deterministic policy engine (`policy test`, `init`) — allow/ask/deny
-- [ ] `agentguard up` — a throwaway kind cluster + a local Ollama model in one
-      command, so you can watch the guard fire against a real agent, on a laptop,
-      CPU-only
+- [x] `agentguard up` / `down` — a throwaway kind cluster + a local Ollama model
+      in one command, on a laptop, CPU-only (its own isolated kubeconfig, never
+      your default)
 - [ ] `agentguard proxy` — an MCP sidecar that enforces the policy on live
       tool calls, with an audit trail and a per-context token/cost counter
 - [ ] `agentguard scan` — a supply-chain audit of the MCP servers an agent
