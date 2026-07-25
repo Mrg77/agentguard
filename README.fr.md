@@ -183,9 +183,9 @@ IA » serait le moins digne de confiance.
 - [x] `agentguard up` / `down` — un cluster kind jetable + un modèle Ollama local
       en une commande, sur un laptop, en CPU seul (kubeconfig isolé, jamais le
       vôtre)
-- [ ] `agentguard proxy` — un sidecar MCP qui applique la policy sur les
-      tool-calls en direct, avec un journal d'audit et un compteur de tokens/coût
-      par contexte
+- [x] `agentguard proxy` — un serveur MCP que l'agent interroge avant d'agir ;
+      applique la policy sur les tool-calls en direct et enregistre chaque
+      décision dans un journal d'audit (`agentguard log`) avec un compte de tokens
 - [ ] `agentguard scan` — un audit supply-chain des serveurs MCP auxquels un
       agent se connecte
 

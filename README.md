@@ -175,8 +175,9 @@ less trustworthy one.
 - [x] `agentguard up` / `down` — a throwaway kind cluster + a local Ollama model
       in one command, on a laptop, CPU-only (its own isolated kubeconfig, never
       your default)
-- [ ] `agentguard proxy` — an MCP sidecar that enforces the policy on live
-      tool calls, with an audit trail and a per-context token/cost counter
+- [x] `agentguard proxy` — an MCP server the agent asks before it acts; enforces
+      the policy on live tool calls, records every decision to an audit trail
+      (`agentguard log`) with a rough token count
 - [ ] `agentguard scan` — a supply-chain audit of the MCP servers an agent
       connects to
 
