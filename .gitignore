@@ -1,0 +1,10 @@
+# Build output
+/agentguard
+/dist/
+
+# Local policy written by `init` during manual testing
+/agentguard.yaml
+
+# Editor / OS
+.DS_Store
+*.swp
