@@ -25,7 +25,10 @@ type Entry struct {
 	Context  string    `json:"context"`
 	Decision string    `json:"decision"` // allow | ask | deny
 	Rule     string    `json:"rule,omitempty"`
-	Tokens   int       `json:"tokens,omitempty"` // rough token count of the action, when known
+	// Tokens is a rough estimate of the ACTION's size (~4 chars/token) for
+	// FinOps/audit context — NOT tokens agentguard spent (it makes no LLM calls)
+	// and NOT a bill. It answers "how big was what my agent tried" at a glance.
+	Tokens int `json:"tokens,omitempty"`
 }
 
 // Path returns the audit log location under XDG_STATE_HOME, alongside the

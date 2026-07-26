@@ -22,7 +22,7 @@ guarantee.
 
 ![agentguard demo](demo/demo.gif)
 
-**[Why](#why) · [Quickstart](#quickstart) · [How it works](#how-it-works) · [Two modes](#two-ways-to-enforce-advisory-vs-firewall) · [The policy](#the-policy) · [CI](#ci) · [Honest scope](#honest-scope) · [Roadmap](#roadmap)**
+**[Why](#why) · [Quickstart](#quickstart) · [How it works](#how-it-works) · [Two modes](#two-ways-to-enforce-advisory-vs-firewall) · [The policy](#the-policy) · [CI](#ci) · [Honest scope](#honest-scope) · [Cost](#cost--tokens) · [Roadmap](#roadmap)**
 
 </div>
 
@@ -202,6 +202,28 @@ The single most important thing this tool says about itself:
 
 This honesty is a feature. A tool that over-promised "AI safety" would be the
 less trustworthy one.
+
+## Cost & tokens
+
+**agentguard makes no LLM calls, so it consumes no tokens of its own.** The
+decision is pure regex matching on `(tool × target × context)` — deterministic,
+local, free to run. That is a deliberate design choice, and the opposite of an
+"LLM-as-a-judge" guardrail that would bill a model call per decision.
+
+What it costs your agent, by mode:
+
+- **`interpose`** — negligible. Allowed calls are relayed to the upstream and
+  returned *verbatim*; agentguard is not in the model dialogue, only in the tool
+  channel. The one cost is that a **denied** call returns a short refusal (~20-40
+  tokens) the agent reads on its next turn — which replaces the far larger cost
+  (and risk) of the dangerous action it blocked.
+- **`proxy`** — a small overhead: the agent makes one extra `guard(...)` call per
+  guarded action (~50-100 tokens), in exchange for the decision and the receipt.
+
+> The `~N tok` shown in `agentguard log` is a **rough estimate of the action's
+> size**, for FinOps/audit context — *not* a bill, and *not* tokens agentguard
+> spent. It's there so "what did my agent try, and how big was it" is answerable
+> at a glance.
 
 ## Roadmap
 

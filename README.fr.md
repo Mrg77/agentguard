@@ -23,7 +23,7 @@ prompt — un filet de sécurité, pas une garantie.
 
 ![agentguard demo](demo/demo.gif)
 
-**[Pourquoi](#pourquoi) · [Démarrage](#démarrage) · [Comment ça marche](#comment-ça-marche) · [Deux modes](#deux-façons-dappliquer-conseil-vs-pare-feu) · [La policy](#la-policy) · [CI](#ci) · [Périmètre honnête](#périmètre-honnête) · [Roadmap](#roadmap)**
+**[Pourquoi](#pourquoi) · [Démarrage](#démarrage) · [Comment ça marche](#comment-ça-marche) · [Deux modes](#deux-façons-dappliquer-conseil-vs-pare-feu) · [La policy](#la-policy) · [CI](#ci) · [Périmètre honnête](#périmètre-honnête) · [Coût](#coût--tokens) · [Roadmap](#roadmap)**
 
 </div>
 
@@ -211,6 +211,29 @@ La chose la plus importante que cet outil dit sur lui-même :
 
 Cette honnêteté est une fonctionnalité. Un outil qui sur-promettrait la « sécurité
 IA » serait le moins digne de confiance.
+
+## Coût & tokens
+
+**agentguard ne fait aucun appel LLM, il ne consomme donc aucun token en propre.**
+La décision est du pur matching de regex sur `(outil × cible × contexte)` —
+déterministe, local, gratuit à faire tourner. C'est un choix de conception
+assumé, et l'inverse d'un garde-fou « LLM-as-a-judge » qui facturerait un appel
+modèle à chaque décision.
+
+Ce que ça coûte à votre agent, selon le mode :
+
+- **`interpose`** — négligeable. Les appels autorisés sont relayés à l'amont et
+  renvoyés *verbatim* ; agentguard n'est pas dans le dialogue du modèle, seulement
+  dans le canal des outils. Le seul coût : un appel **refusé** renvoie un court
+  message de refus (~20-40 tokens) que l'agent lit au tour suivant — ce qui
+  remplace le coût bien plus élevé (et le risque) de l'action dangereuse évitée.
+- **`proxy`** — un léger surcoût : l'agent fait un appel `guard(...)` en plus par
+  action gardée (~50-100 tokens), en échange de la décision et de la trace.
+
+> Le `~N tok` affiché dans `agentguard log` est une **estimation de la taille de
+> l'action**, pour le contexte FinOps/audit — *pas* une facture, et *pas* des
+> tokens qu'agentguard a dépensés. C'est là pour répondre d'un coup d'œil à « qu'a
+> tenté mon agent, et quelle taille ça faisait ».
 
 ## Roadmap
 
