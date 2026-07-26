@@ -23,7 +23,7 @@ prompt — un filet de sécurité, pas une garantie.
 
 ![agentguard demo](demo/demo.gif)
 
-**[Pourquoi](#pourquoi) · [Démarrage](#démarrage) · [Comment ça marche](#comment-ça-marche) · [La policy](#la-policy) · [CI](#ci) · [Périmètre honnête](#périmètre-honnête) · [Roadmap](#roadmap)**
+**[Pourquoi](#pourquoi) · [Démarrage](#démarrage) · [Comment ça marche](#comment-ça-marche) · [Deux modes](#deux-façons-dappliquer-conseil-vs-pare-feu) · [La policy](#la-policy) · [CI](#ci) · [Périmètre honnête](#périmètre-honnête) · [Roadmap](#roadmap)**
 
 </div>
 
@@ -108,6 +108,36 @@ défaut livré est `ask`). Le moteur est **pur** — pas d'I/O, pas d'horloge, p
 modèle — donc la même entrée donne toujours la même décision, et chaque règle est
 testable unitairement.
 
+## Deux façons d'appliquer (conseil vs. pare-feu)
+
+agentguard parle **MCP** ([Model Context Protocol](https://modelcontextprotocol.io)),
+le standard ouvert que parlent Claude Code, Cursor, VS Code, Windsurf, Zed et
+d'autres — il est donc **indépendant de l'IDE** : vous le branchez une fois et il
+marche avec n'importe quel client MCP. Il y a deux modes, et la différence compte :
+
+| Mode | Comment il se place | L'agent peut-il le contourner ? |
+|---|---|---|
+| **`agentguard proxy`** (conseil) | expose un outil `guard` que l'agent *interroge* avant d'agir | Oui — un agent qui déraille pourrait l'ignorer et appeler l'outil directement. Utile quand on veut aussi les traces. |
+| **`agentguard interpose`** (pare-feu) | se place **de façon transparente devant** un vrai serveur d'outils MCP | **Non.** L'agent n'a qu'agentguard dans sa config, pas l'amont — chaque appel est forcé de passer par la policy. |
+
+```text
+interpose : client ──► agentguard ──► serveur MCP amont (kubectl, filesystem, …)
+                            │ allow → relayé à l'amont, sa réponse revient
+                            │ deny  → l'amont n'est JAMAIS appelé ; l'agent reçoit un refus
+```
+
+```sh
+# Placer agentguard devant un vrai serveur d'outils. On branche AGENTGUARD sur le
+# client, pas l'amont — l'agent ne peut atteindre les outils qu'à travers le guard.
+claude mcp add fs -- agentguard interpose --context prod -- \
+  npx -y @modelcontextprotocol/server-filesystem /data
+```
+
+`interpose` recopie les outils de l'amont à l'identique (mêmes noms, mêmes schémas),
+donc l'agent voit exactement le même serveur — il l'atteint juste à travers le
+guard. Chaque décision, dans les deux modes, atterrit dans le journal d'audit
+(`agentguard log`).
+
 ## La policy
 
 `agentguard init` écrit un `agentguard.yaml` commenté et **fail-safe**. Les règles
@@ -172,6 +202,9 @@ La chose la plus importante que cet outil dit sur lui-même :
 - **Il applique sur l'action, pas sur le modèle.** Toute la valeur est
   précisément qu'il ignore ce que le modèle « voulait » et matche ce qu'il *a
   tenté de faire*.
+- **« Pare-feu » désigne `interpose`.** Seul le mode interpose est incontournable
+  (l'agent n'a aucun accès direct à l'outil). Le mode `proxy` est consultatif — il
+  repose sur le fait que l'agent demande d'abord, à coupler avec le journal d'audit.
 - **Un guard auquel on ne peut pas se fier est pire que rien.** Une policy
   invalide est une erreur bruyante, jamais un raté silencieux. Le défaut est
   fail-safe (`ask`).
@@ -188,9 +221,11 @@ scan supply-chain — chacune validée de bout en bout sur une vraie machine :
 - [x] `agentguard up` / `down` — un cluster kind jetable + un modèle Ollama local
       en une commande, sur un laptop, en CPU seul (kubeconfig isolé, jamais le
       vôtre)
-- [x] `agentguard proxy` — un serveur MCP que l'agent interroge avant d'agir ;
-      applique la policy sur les tool-calls en direct et enregistre chaque
-      décision dans un journal d'audit (`agentguard log`) avec un compte de tokens
+- [x] `agentguard proxy` — serveur MCP consultatif que l'agent interroge avant
+      d'agir ; enregistre chaque décision dans un journal d'audit (`agentguard log`)
+- [x] `agentguard interpose` — **le pare-feu** : un proxy MCP transparent devant un
+      vrai serveur d'outils, si bien que chaque appel est forcé de passer par la
+      policy et que l'agent ne peut pas le contourner
 - [x] `agentguard scan` — un audit supply-chain en lecture seule des serveurs MCP
       auxquels un agent se connecte (code distant non épinglé, secrets en clair, HTTP)
 
