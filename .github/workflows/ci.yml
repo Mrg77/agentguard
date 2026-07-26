@@ -83,3 +83,9 @@ jobs:
           p.stdin.close(); p.wait(timeout=5)
           print("proxy enforcement OK")
           PY
+      - name: scan flags an unpinned MCP server and passes a clean one
+        run: |
+          echo '{"mcpServers":{"bad":{"command":"npx","args":["-y","srv"]}}}' > risky.json
+          echo '{"mcpServers":{"ok":{"command":"npx","args":["-y","srv@1.2.3"]}}}' > clean.json
+          ! ./agentguard scan risky.json   # HIGH finding → non-zero, negated → step passes
+          ./agentguard scan clean.json      # no finding → zero

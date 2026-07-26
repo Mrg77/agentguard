@@ -179,6 +179,9 @@ IA » serait le moins digne de confiance.
 
 ## Roadmap
 
+Le MVP à quatre commandes est complet — moteur, démo locale, enforcement runtime,
+scan supply-chain — chacune validée de bout en bout sur une vraie machine :
+
 - [x] Le moteur de policy déterministe (`policy test`, `init`) — allow/ask/deny
 - [x] `agentguard up` / `down` — un cluster kind jetable + un modèle Ollama local
       en une commande, sur un laptop, en CPU seul (kubeconfig isolé, jamais le
@@ -186,8 +189,8 @@ IA » serait le moins digne de confiance.
 - [x] `agentguard proxy` — un serveur MCP que l'agent interroge avant d'agir ;
       applique la policy sur les tool-calls en direct et enregistre chaque
       décision dans un journal d'audit (`agentguard log`) avec un compte de tokens
-- [ ] `agentguard scan` — un audit supply-chain des serveurs MCP auxquels un
-      agent se connecte
+- [x] `agentguard scan` — un audit supply-chain en lecture seule des serveurs MCP
+      auxquels un agent se connecte (code distant non épinglé, secrets en clair, HTTP)
 
 ---
 

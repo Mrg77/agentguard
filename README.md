@@ -171,6 +171,9 @@ less trustworthy one.
 
 ## Roadmap
 
+The four-command MVP is complete — engine, local demo, runtime enforcement,
+supply-chain scan — each validated end to end on a real machine:
+
 - [x] The deterministic policy engine (`policy test`, `init`) — allow/ask/deny
 - [x] `agentguard up` / `down` — a throwaway kind cluster + a local Ollama model
       in one command, on a laptop, CPU-only (its own isolated kubeconfig, never
@@ -178,8 +181,8 @@ less trustworthy one.
 - [x] `agentguard proxy` — an MCP server the agent asks before it acts; enforces
       the policy on live tool calls, records every decision to an audit trail
       (`agentguard log`) with a rough token count
-- [ ] `agentguard scan` — a supply-chain audit of the MCP servers an agent
-      connects to
+- [x] `agentguard scan` — a read-only supply-chain audit of the MCP servers an
+      agent connects to (unpinned remote code, hard-coded secrets, plain HTTP)
 
 ---
 
