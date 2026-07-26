@@ -89,3 +89,8 @@ jobs:
           echo '{"mcpServers":{"ok":{"command":"npx","args":["-y","srv@1.2.3"]}}}' > clean.json
           ! ./agentguard scan risky.json   # HIGH finding → non-zero, negated → step passes
           ./agentguard scan clean.json      # no finding → zero
+      - name: interpose is an unbypassable firewall (real upstream MCP server)
+        env:
+          XDG_STATE_HOME: ${{ runner.temp }}/ag-state
+        run: |
+          python3 demo/interpose-poc.py ./agentguard "${{ runner.temp }}/ag-data"
