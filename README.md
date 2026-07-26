@@ -20,6 +20,8 @@ guarantee.
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Made with Go](https://img.shields.io/badge/made%20with-Go-00ADD8?logo=go&logoColor=white)](https://go.dev)
 
+![agentguard demo](demo/demo.gif)
+
 **[Why](#why) · [Quickstart](#quickstart) · [How it works](#how-it-works) · [The policy](#the-policy) · [CI](#ci) · [Honest scope](#honest-scope) · [Roadmap](#roadmap)**
 
 </div>

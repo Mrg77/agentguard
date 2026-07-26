@@ -21,6 +21,8 @@ prompt — un filet de sécurité, pas une garantie.
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Made with Go](https://img.shields.io/badge/made%20with-Go-00ADD8?logo=go&logoColor=white)](https://go.dev)
 
+![agentguard demo](demo/demo.gif)
+
 **[Pourquoi](#pourquoi) · [Démarrage](#démarrage) · [Comment ça marche](#comment-ça-marche) · [La policy](#la-policy) · [CI](#ci) · [Périmètre honnête](#périmètre-honnête) · [Roadmap](#roadmap)**
 
 </div>

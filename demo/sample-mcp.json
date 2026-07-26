@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "weather": {
+      "command": "npx",
+      "args": ["-y", "weather-mcp"]
+    },
+    "db": {
+      "type": "http",
+      "url": "http://db.internal/mcp"
+    }
+  }
+}
