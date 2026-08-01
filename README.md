@@ -6,6 +6,7 @@
 
 **English** · [Français](README.fr.md)
 
+[![CI](https://github.com/Mrg77/agentguard/actions/workflows/ci.yml/badge.svg)](https://github.com/Mrg77/agentguard/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Made with Go](https://img.shields.io/badge/made%20with-Go-00ADD8?logo=go&logoColor=white)](https://go.dev)
 
@@ -50,9 +51,23 @@ agent** tries.)*
 
 ---
 
-## Try it in a minute
+## Install
 
-All you need is [Go](https://go.dev) (version 1.26 or newer).
+```sh
+# macOS (Homebrew):
+brew install mrg77/tap/agentguard
+
+# Linux (Debian/Ubuntu/Alpine…) or macOS — the install script:
+curl -fsSL https://raw.githubusercontent.com/Mrg77/agentguard/main/install.sh | sh
+
+# or build from source (Go 1.26+):
+git clone https://github.com/Mrg77/agentguard && cd agentguard && go build -o agentguard .
+```
+
+The script picks the right binary for your OS/arch into `~/.local/bin` (override
+with `AGENTGUARD_INSTALL_DIR`, pin a version with `AGENTGUARD_VERSION=v0.1.0`).
+
+## Try it in a minute
 
 ```sh
 git clone https://github.com/Mrg77/agentguard && cd agentguard

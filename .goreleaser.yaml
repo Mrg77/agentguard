@@ -1,0 +1,63 @@
+# GoReleaser config for agentguard. Cuts cross-platform binaries + checksums on a
+# tag, and publishes a Homebrew formula to Mrg77/homebrew-tap.
+#
+# Release flow: bump → git tag vX.Y.Z → git push --tags → CI runs goreleaser.
+version: 2
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - id: agentguard
+    main: .
+    binary: agentguard
+    env:
+      - CGO_ENABLED=0
+    goos: [linux, darwin, windows]
+    goarch: [amd64, arm64]
+    ldflags:
+      - -s -w -X github.com/Mrg77/agentguard/cmd.version={{ .Version }}
+
+archives:
+  - id: agentguard
+    formats: [tar.gz]
+    name_template: >-
+      {{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}
+    format_overrides:
+      - goos: windows
+        formats: [zip]
+
+checksum:
+  name_template: "checksums.txt"
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "^chore:"
+      - "^ci:"
+
+# Homebrew (goreleaser v2: homebrew_casks; brews is deprecated), pushed to the
+# tap → `brew install mrg77/tap/agentguard`.
+homebrew_casks:
+  - name: agentguard
+    repository:
+      owner: Mrg77
+      name: homebrew-tap
+      token: "{{ .Env.HOMEBREW_TAP_TOKEN }}"
+    homepage: "https://github.com/Mrg77/agentguard"
+    description: "A policy-as-code firewall for an AI agent's tool calls — stop a dangerous action before it reaches your infrastructure."
+    commit_author:
+      name: Mrg77
+      email: 52857557+Mrg77@users.noreply.github.com
+    # Clear the quarantine attribute so the unsigned binary runs without a
+    # Gatekeeper prompt on macOS.
+    hooks:
+      post:
+        install: |
+          if system_command("/usr/bin/xattr", args: ["-h"]).exit_status == 0
+            system_command "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "#{staged_path}/agentguard"]
+          end
